@@ -1,4 +1,5 @@
 import React, {useState, useEffect} from "react";
+import {useAppSelector} from "../../hooks/useRedux";
 
 const getPadTime = (time: number) => time.toString().padStart(2, '0');
 
@@ -7,18 +8,21 @@ const Timer: React.FC<{ timeCount: number }> = ({timeCount}) => {
     const [isCounting, setCounting] = useState(true);
     const min = getPadTime(Math.floor(time / 60));
     const sec = getPadTime(time - Math.floor(time / 60) * 60);
+    const {win, loose} = useAppSelector(state => state.mineReducer);
 
     useEffect(() => {
-        const interval = setInterval(() => {
-            isCounting && setTime(time >= 1 ? time - 1 : 0)
-        }, 1000)
-        if (time === 0) {
-            setCounting(false);
+        if (!win && !loose) {
+            const interval = setInterval(() => {
+                isCounting && setTime(time >= 1 ? time - 1 : 0)
+            }, 1000)
+            if (time === 0) {
+                setCounting(false);
+            }
+            return () => {
+                clearInterval(interval)
+            }
         }
-        return () => {
-            clearInterval(interval)
-        }
-    }, [time]);
+    }, [time, win, loose]);
 
     return (
         <div>

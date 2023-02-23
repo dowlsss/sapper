@@ -1,0 +1,49 @@
+.section {
+  position: absolute;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2px;
+  flex-wrap: wrap;
+  overflow: hidden;
+
+  @media (max-width: 500px) {
+    overflow: auto;
+    -ms-overflow-style: none;
+    &::-webkit-scrollbar {
+      width: 0;
+    }
+  }
+
+  .span {
+    position: relative;
+    display: block;
+    width: calc(6.25vw - 2px);
+    height: calc(6.25vw - 2px);
+    opacity: 0.4;
+    background: #cbf1f5;
+    z-index: 0;
+    transition: 1.5s;
+
+    &:hover {
+      background-color: #07c2ce;
+      transition: 0s;
+    }
+
+    @media (max-width: 1200px) {
+
+      width: calc(8vw - 2px);
+      height: calc(8vw - 2px);
+    }
+    @media (max-width: 900px) {
+      width: calc(10vw - 2px);
+      height: calc(10vw - 2px);
+    }
+    @media (max-width: 600px) {
+      width: calc(20vw - 2px);
+      height: calc(20vw - 2px);
+    }
+  }
+}

@@ -3,12 +3,16 @@ import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 interface IInitialState {
     opened: number[]
     loose: boolean
+    win: boolean
+    time: number
     size: [number, number]
 }
 
 const initialState: IInitialState = {
     opened: [],
+    win: false,
     loose: false,
+    time: 0,
     size: [0, 0]
 
 }
@@ -18,6 +22,12 @@ export const mineSlice = createSlice({
     name: 'mineSlice',
     initialState: initialState,
     reducers: {
+        setTime(state: IInitialState, action: PayloadAction<number>) {
+            state.time = action.payload;
+        },
+        setWin(state: IInitialState, action: PayloadAction<boolean>) {
+            state.win = action.payload;
+        },
         setLoose(state: IInitialState, action: PayloadAction<boolean>) {
             state.loose = action.payload;
         },

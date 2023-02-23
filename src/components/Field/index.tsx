@@ -3,8 +3,6 @@ import styles from "./styles/index.module.scss";
 import {useAppDispatch, useAppSelector} from "../../hooks/useRedux";
 import {mineSlice} from "../../redux/reducers/mineReducer";
 import Timer from "../Timer";
-import timer from "../Timer";
-
 
 interface IField {
     timeToGame: number
@@ -66,25 +64,23 @@ function getFontColor(value: number) {
 }
 
 
-export const Field = ({timeToGame}: IField) => {
+export const Field = () => {
     const [width, height] = useAppSelector(state => state.mineReducer.size);
-    const {opened} = useAppSelector(state => state.mineReducer);
-    const {setOpened, createOpened} = mineSlice.actions;
+    const {opened, win, loose, time} = useAppSelector(state => state.mineReducer);
+    const {setOpened, createOpened, setWin, setLoose} = mineSlice.actions;
     const dispatch = useAppDispatch();
-    const [time, setTime] = useState<number>(timeToGame)
     const [field, setField] = useState<number[]>(createField(width, height));
     const [flag, setFlag] = useState([...new Array(width * height).fill('')]);
-    const [loose, setLoose] = useState<boolean>(false);
 
 
     const clickHandler = (e: any, index: number) => {
         e.stopPropagation()
-        if (opened[index] === 1) {
+        if (opened[index] === 1 || win || loose) {
             return;
         }
 
         if (field[index] === -1) {
-            setLoose(true);
+            dispatch(setLoose(true));
         }
         let cellContainer: [number, number][] = [];
         const flag_ = [...flag];
@@ -135,6 +131,9 @@ export const Field = ({timeToGame}: IField) => {
 
     const onContextMenuHandler = (e: any, index: number) => {
         e.stopPropagation();
+        if (opened[index] || win || loose) {
+            return;
+        }
         if (!flag[index]) {
             setFlag(flag.map((value, index1) => index1 === index ? '🚩' : value));
         } else if (flag[index] === '🚩') {
@@ -147,10 +146,17 @@ export const Field = ({timeToGame}: IField) => {
     const resetHandler = () => {
         setField(createField(width, height));
         setFlag(flag.map((_) => ''));
-        setTime(timeToGame + 1);
-        dispatch(createOpened([16, 16]));
-
+        dispatch(createOpened([width, height]));
+        dispatch(setWin(false));
+        dispatch(setLoose(false));
     }
+
+    useEffect(() => {
+        if ((opened.filter((value) => value === 1).length + flag.filter((value => value === '🚩')).length) === field.length && !loose) {
+            dispatch(setWin(true));
+        }
+    }, [opened, flag])
+
     useEffect(() => {
         if (loose) {
             alert('ты проиграл')
@@ -167,7 +173,7 @@ export const Field = ({timeToGame}: IField) => {
                 </div>
                 <div className={styles.btnGroup}>
                     <button onClick={() => resetHandler()}>Reset</button>
-                    <button>Settings</button>
+                    <button>Menu</button>
                 </div>
                 <div>
                     <span>💣 - </span>
@@ -176,8 +182,8 @@ export const Field = ({timeToGame}: IField) => {
             </div>
             <div className={styles.fieldContainer}
                  style={{
-                     gridTemplateColumns: `repeat(${width}, calc(80vw / ${Math.floor(width * 1.5)})`,
-                     gridTemplateRows: `repeat(${height}, calc(60vh / ${Math.floor(height * 1.5)})`
+                     gridTemplateColumns: `repeat(${width}, calc((80vw - (0.625vw * ${width})) / ${width})`,
+                     gridTemplateRows: `repeat(${height}, calc(70vh / ${width})`
                  }}>
                 {
                     field.map(((value, index) => {

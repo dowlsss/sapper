@@ -1,17 +1,18 @@
 import React from 'react';
 import styles from "./App.module.scss"
 import {Field} from "./components/Field";
-import {useAppDispatch} from "./hooks/useRedux";
-import {mineSlice} from "./redux/reducers/mineReducer";
+import {Background} from "./components/Background";
+import {Menu} from "./components/Menu";
+import {useAppSelector} from "./hooks/useRedux";
 
 function App() {
-    const dispatch = useAppDispatch();
-    const {setSize, createOpened} = mineSlice.actions;
-    dispatch(createOpened([16, 16]))
-    dispatch(setSize([16, 16]))
+    const {time, size} = useAppSelector(state => state.mineReducer);
     return (
         <div className={styles.App}>
-            <Field timeToGame={10}/>
+            {time && size ?
+                <Background children={<Field/>}/> :
+                <Background children={<Menu/>}/>
+            }
         </div>
     );
 }
