@@ -95,7 +95,6 @@ export const Field = () => {
             }
             cellContainer.push([x, y])
 
-
         }
         const isChecked = (cellIndex: number) => {
             return !!opened_[cellIndex]
@@ -128,7 +127,7 @@ export const Field = () => {
         setFlag(flag_);
 
     }
-
+    console.log(field)
     const onContextMenuHandler = (e: any, index: number) => {
         e.stopPropagation();
         if (opened[index] || win || loose) {

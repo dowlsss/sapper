@@ -13,7 +13,7 @@ export const TableOfRecords = () => {
             return <th/>;
         }
         try {
-            JSON.parse(localStorage.getItem('time') as string).map((value: number, index: number) => {
+            return JSON.parse(localStorage.getItem('time') as string).map((value: number, index: number) => {
                 const min = getPadTime(Math.floor(value / 60));
                 const sec = getPadTime(value - Math.floor(value / 60) * 60);
                 return (
