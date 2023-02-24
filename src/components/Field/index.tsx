@@ -4,7 +4,7 @@ import {useAppDispatch, useAppSelector} from "../../hooks/useRedux";
 import {mineSlice} from "../../redux/reducers/mineReducer";
 import Timer from "../Timer";
 
-const createField = (width: number, height: number) => {
+const createField = (width: number, height: number, index: number) => {
     const field: number[] = new Array(width * height).fill(0);
 
     function inc(x: number, y: number) {
@@ -19,7 +19,7 @@ const createField = (width: number, height: number) => {
         const x = Math.floor(Math.random() * width);
         const y = Math.floor(Math.random() * height);
 
-        if (field[y * width + x] === -1) continue;
+        if (field[y * width + x] === -1 || ((y * width + x) === index)) continue;
 
         field[y * width + x] = -1;
 
@@ -66,11 +66,14 @@ export const Field = () => {
     const {setOpened, createOpened, setWin, setLoose, setTime, setSize} = mineSlice.actions;
     const dispatch = useAppDispatch();
     const [reset, setReset] = useState(false);
-    const [field, setField] = useState<number[]>(createField(width, height));
+    const [field, setField] = useState<number[]>([]);
     const [flag, setFlag] = useState([...new Array(width * height).fill('')]);
 
 
     const clickHandler = (e: any, index: number) => {
+        if (field.length === 0) {
+            setField(createField(width, height, index));
+        }
         e.stopPropagation()
         if (opened[index] === 1 || win || loose) {
             return;
@@ -141,7 +144,7 @@ export const Field = () => {
     }
 
     const resetHandler = () => {
-        setField(createField(width, height));
+        setField([]);
         setFlag(flag.map((_) => ''));
         dispatch(createOpened([width, height]));
         dispatch(setWin(false));
@@ -156,9 +159,8 @@ export const Field = () => {
         dispatch(setLoose(false));
         dispatch(setWin(false));
     }
-
     useEffect(() => {
-        if ((((opened.filter((value) => value === 1).length + flag.filter((value => value === '🚩')).length) === field.length) || ((opened.filter((value) => value === 1).length + field.filter(value => value === -1).length) === field.length)) && !loose) {
+        if ((((opened.filter((value) => value === 1).length + flag.filter((value => value === '🚩')).length) === field.length) || ((opened.filter((value) => value === 1).length + field.filter(value => value === -1).length) === field.length)) && !loose && field.length !== 0) {
             dispatch(setWin(true));
             alert('Congratulations on your victory, your result will be recorded in the table!');
         }
@@ -193,19 +195,18 @@ export const Field = () => {
                      gridTemplateRows: `repeat(${height}, calc(70vh / ${width})`
                  }}>
                 {
-                    field.map(((value, index) => {
-                        return (
-                            <div style={getFontColor(field[index])}
+
+                    Array.from(Array(width * height).keys()).map(((value, index) =>
+                            <div className={styles.cell} style={getFontColor(field[index])}
                                  onContextMenu={(e) => onContextMenuHandler(e, index)}
                                  onClick={(e) => clickHandler(e, index)} key={index}
-                                 className={styles.cell}>
+                            >
                                 {
                                     flag[index] && !opened[index] ? flag[index] :
-                                        opened[index] ? field[index] > 0 ? value : field[index] === 0 ? '✔' : '💣' : null
+                                        opened[index] ? field[index] > 0 ? field[index] : field[index] === 0 ? '✔' : '💣' : null
                                 }
                             </div>
-                        )
-                    }))
+                    ))
                 }
 
             </div>
