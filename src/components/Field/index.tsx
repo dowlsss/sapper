@@ -15,7 +15,7 @@ const createField = (width: number, height: number) => {
         }
     }
 
-    for (let i = 0; i < width;) {
+    for (let i = 0; i < width * 2;) {
         const x = Math.floor(Math.random() * width);
         const y = Math.floor(Math.random() * height);
 
