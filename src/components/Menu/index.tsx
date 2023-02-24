@@ -4,7 +4,7 @@ import {mineSlice} from "../../redux/reducers/mineReducer";
 
 export const Menu = () => {
     const dispatch = useAppDispatch();
-    const {setSize, createOpened, setTime} = mineSlice.actions;
+    const {setSize, createOpened, setTime, setOpenTableWithResults} = mineSlice.actions;
 
     const easyHandler = () => {
         dispatch(createOpened([8, 8]));
@@ -22,10 +22,9 @@ export const Menu = () => {
         dispatch(setSize([32, 16]));
         dispatch(setTime(100));
     }
-    const userHandler = () => {
-        dispatch(createOpened([8, 8]));
-        dispatch(setSize([8, 8]));
-        setTime(10);
+
+    const resultsHandler = () => {
+        dispatch(setOpenTableWithResults())
     }
 
     return (
@@ -60,18 +59,9 @@ export const Menu = () => {
             <div className={styles.box}>
                 <div className={styles.content}>
                     <div className={styles.text}>
-                        <h3>User Settings</h3>
-                        <p>Play as you like!</p>
-                        <button>Go</button>
-                    </div>
-                </div>
-            </div>
-            <div className={styles.box}>
-                <div className={styles.content}>
-                    <div className={styles.text}>
                         <h3>Tables of records</h3>
                         <p>Find out your best score</p>
-                        <button>Go</button>
+                        <button onClick={resultsHandler}>Go</button>
                     </div>
                 </div>
             </div>

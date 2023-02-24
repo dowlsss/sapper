@@ -4,15 +4,17 @@ import {Field} from "./components/Field";
 import {Background} from "./components/Background";
 import {Menu} from "./components/Menu";
 import {useAppSelector} from "./hooks/useRedux";
+import {TableOfRecords} from "./components/TableOfRecords";
 
 function App() {
-    const {time, size} = useAppSelector(state => state.mineReducer);
+    const {time, size, openTableWithResults} = useAppSelector(state => state.mineReducer);
     return (
         <div className={styles.App}>
-            {time && size ?
+            {openTableWithResults ? <Background children={<TableOfRecords/>}/> : time && size ?
                 <Background children={<Field/>}/> :
                 <Background children={<Menu/>}/>
             }
+
         </div>
     );
 }

@@ -4,10 +4,6 @@ import {useAppDispatch, useAppSelector} from "../../hooks/useRedux";
 import {mineSlice} from "../../redux/reducers/mineReducer";
 import Timer from "../Timer";
 
-interface IField {
-    timeToGame: number
-}
-
 const createField = (width: number, height: number) => {
     const field: number[] = new Array(width * height).fill(0);
 
@@ -19,7 +15,7 @@ const createField = (width: number, height: number) => {
         }
     }
 
-    for (let i = 0; i < width * 2;) {
+    for (let i = 0; i < width;) {
         const x = Math.floor(Math.random() * width);
         const y = Math.floor(Math.random() * height);
 
@@ -67,8 +63,9 @@ function getFontColor(value: number) {
 export const Field = () => {
     const [width, height] = useAppSelector(state => state.mineReducer.size);
     const {opened, win, loose, time} = useAppSelector(state => state.mineReducer);
-    const {setOpened, createOpened, setWin, setLoose} = mineSlice.actions;
+    const {setOpened, createOpened, setWin, setLoose, setTime, setSize} = mineSlice.actions;
     const dispatch = useAppDispatch();
+    const [reset, setReset] = useState(false);
     const [field, setField] = useState<number[]>(createField(width, height));
     const [flag, setFlag] = useState([...new Array(width * height).fill('')]);
 
@@ -149,17 +146,27 @@ export const Field = () => {
         dispatch(createOpened([width, height]));
         dispatch(setWin(false));
         dispatch(setLoose(false));
+        setReset(true);
+    }
+
+    const menuHandler = () => {
+        dispatch(createOpened([0, 0]));
+        dispatch(setSize([0, 0]));
+        dispatch(setTime(0));
+        dispatch(setLoose(false));
+        dispatch(setWin(false));
     }
 
     useEffect(() => {
-        if ((opened.filter((value) => value === 1).length + flag.filter((value => value === '🚩')).length) === field.length && !loose) {
+        if ((((opened.filter((value) => value === 1).length + flag.filter((value => value === '🚩')).length) === field.length) || ((opened.filter((value) => value === 1).length + field.filter(value => value === -1).length) === field.length)) && !loose) {
             dispatch(setWin(true));
+            alert('Congratulations on your victory, your result will be recorded in the table!');
         }
     }, [opened, flag])
 
     useEffect(() => {
         if (loose) {
-            alert('ты проиграл')
+            alert('You\'ve lost, you can try again')
             opened.map((_, index) => dispatch(setOpened({index, value: 1})));
             setFlag([...new Array(width * height).fill('')]);
         }
@@ -169,11 +176,11 @@ export const Field = () => {
             <div className={styles.infoGroup}>
                 <div className={styles.timeContainer}>
                     <span>Time - </span>
-                    <Timer timeCount={time}/>
+                    <Timer reset={reset} setReset={setReset} timeCount={time}/>
                 </div>
                 <div className={styles.btnGroup}>
-                    <button onClick={() => resetHandler()}>Reset</button>
-                    <button>Menu</button>
+                    <button onClick={resetHandler}>Reset</button>
+                    <button onClick={menuHandler}>Menu</button>
                 </div>
                 <div>
                     <span>💣 - </span>

@@ -6,6 +6,7 @@ interface IInitialState {
     win: boolean
     time: number
     size: [number, number]
+    openTableWithResults: boolean
 }
 
 const initialState: IInitialState = {
@@ -13,7 +14,8 @@ const initialState: IInitialState = {
     win: false,
     loose: false,
     time: 0,
-    size: [0, 0]
+    size: [0, 0],
+    openTableWithResults: false
 
 }
 
@@ -22,6 +24,9 @@ export const mineSlice = createSlice({
     name: 'mineSlice',
     initialState: initialState,
     reducers: {
+        setOpenTableWithResults(state: IInitialState) {
+            state.openTableWithResults = !state.openTableWithResults
+        },
         setTime(state: IInitialState, action: PayloadAction<number>) {
             state.time = action.payload;
         },
